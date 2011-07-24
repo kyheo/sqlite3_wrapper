@@ -1,5 +1,9 @@
 import sqlite3
 
+def connect(*args, **kwargs):
+    return sqlite3.connect(factory=SQL3_Connection, *args, **kwargs)
+
+
 class SQL3_Row(sqlite3.Row):
     pass
 
@@ -51,17 +55,11 @@ class SQL3_Cursor(sqlite3.Cursor):
         return super(SQL3_Cursor, self).rowcount
 
 
-class SQL3_Connection(object):
+class SQL3_Connection(sqlite3.Connection):
 
-    def __init__(self, database, *args, **kwargs):
-        self.con = sqlite3.connect(database, *args, **kwargs)
-        self.con.row_factory = SQL3_Row
+    def __init__(self, *args, **kwargs):
+        super(SQL3_Connection, self).__init__(*args, **kwargs)
+        self.row_factory = SQL3_Row
 
     def cursor(self):
-        return self.con.cursor(SQL3_Cursor)
-
-    def execute(self, *args, **kwargs):
-        return self.cursor().execute(*args, **kwargs)
-
-    def executemany(self, *args, **kwargs):
-        return self.cursor().executemany(*args, **kwargs)
+        return super(SQL3_Connection, self).cursor(SQL3_Cursor)

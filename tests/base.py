@@ -1,12 +1,12 @@
 import unittest
 
 import sqlite3
-from lib.sqlite3_wrapper import *
+from lib import sqlite3_wrapper
 
 class Base(unittest.TestCase):
 
     def setUp(self):
-        self.con = {'sqw': SQL3_Connection(":memory:"),
+        self.con = {'sqw': sqlite3_wrapper.connect(":memory:"),
                     'sql': sqlite3.connect(':memory:')}
         self.con['sql'].row_factory = sqlite3.Row
         self._create_tables()
@@ -14,6 +14,7 @@ class Base(unittest.TestCase):
 
     def tearDown(self):
         for name, con in self.con.iteritems():
+            self.con['sql'].close()
             del(con)
 
     def _get_cons(self):
